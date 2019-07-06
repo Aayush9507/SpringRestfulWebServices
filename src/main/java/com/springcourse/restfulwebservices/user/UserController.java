@@ -22,50 +22,50 @@ public class UserController {
 
 	@Autowired
 	UserDaoService service;
-	
+
 //	get all users
-	
+
 //	get one user
 	@GetMapping("/users")
 	public List<User> retrieveAllUsers(){
 		return service.findAll();
-				
+
 	}
-	
+
 	@GetMapping("/users/{id}")
 	public Resource<User> getuser(@PathVariable int id) {
-		
+
 		User user = service.findOne(id);
-		if(user==null) 
+		if(user==null)
 			throw new UserNotFoundException("id-"+id);
-		
+
 		Resource<User> resource = new Resource<User>(user);
 		ControllerLinkBuilder linkTo = linkTo(methodOn(this.getClass()).retrieveAllUsers());
 		resource.add(linkTo.withRel("all-users"));
 		return resource;
-		
+
 	}
-	
+
 	@DeleteMapping("/users/{id}")
 	public void deleteUser(@PathVariable int id) {
-		
+
 		User user =  service.deleteById(id);
-		if(user==null) 
+		if(user==null)
 			throw new UserNotFoundException("id-"+id);
-		
+
 	}
-	
+
 	@PostMapping("/users")
 	public ResponseEntity<Object> createUser(@Valid @RequestBody User user) {
 		User saved = service.save(user);
-		
+
 		URI location = ServletUriComponentsBuilder
 				.fromCurrentRequest()
 				.path("/{id}")
 				.buildAndExpand(saved.getId())
 				.toUri();
-		
+
 		return ResponseEntity.created(location).build();
 	}
-	
+
 }
